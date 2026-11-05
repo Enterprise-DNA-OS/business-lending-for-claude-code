@@ -1,14 +1,32 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Business Lending for Claude Code: what needs attention, rendered by npm run view",
+    "title": "This week on the lending desk",
+    "subtitle": "What needs a banker, worst first. Rendered by npm run view.",
     "sections": [
-      {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
-      }
+      { "title": "Needs attention", "note": "Overdue reviews, notice deadlines, covenant breaches and tests, late financials, KYC refreshes, quiet clients and overdue follow-ups.", "sql": "select issue, client_code as code, client, banker, on_date, detail from v_attention order by severity, on_date nulls first" },
+      { "title": "Maturities in the next 180 days", "sql": "select code, client, replace(repayment, '_', ' ') as repayment, to_char(limit_cents / 100.0, 'FM$999,999,999') as limit, maturity_on, case when repayment <> 'amortising' and small_business then notice_by::text else '' end as notice_by, replace(extension_decision, '_', ' ') as decision from v_maturities where days_to_maturity <= 180 order by maturity_on" },
+      { "title": "Open pipeline", "sql": "select o.code, c.name as client, o.product, o.stage, to_char(o.amount_cents / 100.0, 'FM$999,999,999') as amount, o.expected_on, (current_date - o.updated_at::date) as idle_days from opportunities o join clients c on c.id = o.client_id where o.stage not in ('settled', 'lost') order by o.expected_on" }
+    ]
+  },
+  {
+    "name": "book",
+    "title": "The lending book",
+    "subtitle": "Connected exposure, concentration and headroom.",
+    "sections": [
+      { "title": "Connected exposure by client group", "sql": "select group_code, group_name, clients as entities, facilities, to_char(limit_cents / 100.0, 'FM$999,999,999') as limits, to_char(drawn_cents / 100.0, 'FM$999,999,999') as drawn, worst_grade, case when on_watchlist then 'yes' else '' end as watchlist from v_group_exposure order by limit_cents desc" },
+      { "title": "By industry", "sql": "select coalesce(c.industry, '(not set)') as industry, count(*) as clients, to_char(sum(e.limit_cents) / 100.0, 'FM$999,999,999') as limits, round(100.0 * sum(e.limit_cents) / nullif((select sum(limit_cents) from v_client_exposure), 0), 1) as share_pct from v_client_exposure e join clients c on c.id = e.client_id group by 1 order by sum(e.limit_cents) desc" },
+      { "title": "Facilities above 90 percent drawn", "sql": "select f.code, c.name as client, replace(f.kind, '_', ' ') as type, to_char(f.limit_cents / 100.0, 'FM$999,999,999') as limit, round(100.0 * f.drawn_cents / nullif(f.limit_cents, 0)) as used_pct from facilities f join clients c on c.id = f.client_id where f.status = 'active' and f.limit_cents > 0 and f.drawn_cents >= 0.9 * f.limit_cents order by used_pct desc" }
+    ]
+  },
+  {
+    "name": "compliance",
+    "title": "Conduct and policy checks",
+    "subtitle": "The data checked against the rules in docs/compliance.md.",
+    "sections": [
+      { "title": "Banking Code notice dates", "note": "Interest-only, balloon and revolving small business facilities: notice of a decision not to extend at least 3 months before maturity (para 93).", "sql": "select code, client, maturity_on, notice_by, replace(extension_decision, '_', ' ') as decision, case when notice_issued then 'issued' else '' end as notice from v_maturities where small_business and repayment <> 'amortising' and extension_decision <> 'extend' order by notice_by" },
+      { "title": "KYC refresh", "sql": "select code, name, banker, kyc_risk, kyc_reviewed_on, kyc_due_on from v_kyc_due where kyc_due_on <= current_date + 60 order by kyc_due_on" },
+      { "title": "Late financial information", "sql": "select client_code as code, client, replace(kind, '_', ' ') as item, due_on, days_overdue from v_financials_outstanding where days_overdue > 0 order by days_overdue desc" }
     ]
   }
 ]

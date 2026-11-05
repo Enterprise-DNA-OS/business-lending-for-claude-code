@@ -1,10 +1,9 @@
 {
-  "_": "Your business on every document and view. Change these and run `npm run docs` or `npm run view`.",
-  "business_name": "Your Business",
-  "logo_path": "",
-  "primary": "#6654f5",
-  "accent": "#ca5a8b",
+  "business_name": "Southern Plains Business Finance",
+  "primary": "#1f5f8b",
+  "accent": "#c47f17",
   "ink": "#0b0c18",
   "paper": "#ffffff",
-  "footer_line": "Prepared with Business Lending for Claude Code."
+  "logo_path": "",
+  "footer_line": "Synthetic demonstration book. Not a real lender."
 }

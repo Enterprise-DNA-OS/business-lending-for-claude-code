@@ -1,11 +1,36 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "credit-review-paper",
+    "title": "Annual credit review paper",
+    "for_each": "select r.id, c.code || ' ' || c.name as label from credit_reviews r join clients c on c.id = r.client_id where r.completed_on is null and c.status = 'active' order by r.due_on",
+    "file": "label",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      { "title": "Client", "layout": "record", "sql": "select c.code, c.name, replace(c.entity_type, '_', ' ') as entity, c.industry, b.name as banker, g.name as client_group, c.risk_grade as current_grade, case when c.watchlist then 'yes' else 'no' end as watchlist, c.kyc_risk as kyc_risk, c.kyc_reviewed_on as kyc_last_done, r.due_on as review_due, c.notes from credit_reviews r join clients c on c.id = r.client_id left join bankers b on b.id = c.banker_id left join client_groups g on g.id = c.group_id where r.id = $1" },
+      { "title": "Connected exposure", "note": "Every entity in the same client group.", "sql": "select e.code, e.name, e.facilities, to_char(e.limit_cents / 100.0, 'FM$999,999,999') as limits, to_char(e.drawn_cents / 100.0, 'FM$999,999,999') as drawn, e.risk_grade as grade from v_client_exposure e join clients c on c.id = e.client_id where c.id = (select client_id from credit_reviews where id = $1) or (c.group_id is not null and c.group_id = (select x.group_id from clients x join credit_reviews r on r.client_id = x.id where r.id = $1)) order by e.code" },
+      { "title": "Facilities", "sql": "select f.code, replace(f.kind, '_', ' ') as type, f.purpose, to_char(f.limit_cents / 100.0, 'FM$999,999,999') as limit, to_char(f.drawn_cents / 100.0, 'FM$999,999,999') as drawn, replace(f.repayment, '_', ' ') as repayment, f.maturity_on, f.security from facilities f where f.status = 'active' and f.client_id = (select client_id from credit_reviews where id = $1) order by f.code" },
+      { "title": "Covenants and last results", "sql": "select d.code, d.metric || ' ' || d.comparator || coalesce(' ' || d.threshold::text, '') as test, d.next_test_on, coalesce(d.last_result, 'not tested') as last_result, d.last_value from v_covenants_due d join clients c on c.code = d.client_code where c.id = (select client_id from credit_reviews where id = $1) order by d.code" },
+      { "title": "Financial information", "sql": "select replace(x.kind, '_', ' ') as item, x.period_end, x.due_on, coalesce(x.received_on::text, 'outstanding') as received from financials x where x.client_id = (select client_id from credit_reviews where id = $1) order by x.due_on desc" },
+      { "title": "Previous reviews", "sql": "select r.completed_on, r.outcome, r.grade_before, r.grade_after, r.approved_by, r.summary from credit_reviews r where r.client_id = (select client_id from credit_reviews where id = $1) and r.completed_on is not null order by r.completed_on desc" },
+      { "title": "Recent contact", "sql": "select i.happened_on, i.kind, i.summary from interactions i where i.client_id = (select client_id from credit_reviews where id = $1) order by i.happened_on desc limit 5" }
+    ]
+  },
+  {
+    "name": "notice",
+    "title": "Notice to customer",
+    "for_each": "select n.id, n.code || ' ' || c.name as label from notices n join clients c on c.id = n.client_id where n.status in ('draft', 'issued') order by n.issued_on",
+    "file": "label",
+    "sections": [
+      { "title": "Notice", "layout": "record", "sql": "select n.code as reference, c.name as to_customer, (select p.name from contacts p where p.client_id = c.id and p.primary_contact limit 1) as attention, f.code as facility, f.purpose as facility_purpose, case n.kind when 'non_extension' then 'Notice of decision not to extend your loan' when 'default_remedy' then 'Notice of default and time to remedy' when 'payment_default' then 'Notice of payment default' else 'Notice of change to your terms' end as subject, n.issued_on as date_of_notice, n.effective_on as effective_date, (n.effective_on - n.issued_on) as days_given, n.grounds, case n.kind when 'non_extension' then 'Banking Code of Practice 2025, para 93 (at least 3 months)' when 'default_remedy' then 'Banking Code of Practice 2025, paras 88 to 90 (grounds and at least 30 days)' when 'payment_default' then 'Banking Code of Practice 2025, para 82 (at least 30 days)' else 'Banking Code of Practice 2025, para 36 (at least 30 days)' end as code_reference, n.status, n.issued_by from notices n join clients c on c.id = n.client_id left join facilities f on f.id = n.facility_id where n.id = $1" }
+    ]
+  },
+  {
+    "name": "covenant-schedule",
+    "title": "Covenant schedule and test history",
+    "for_each": "select distinct c.id, c.code || ' ' || c.name as label from clients c join facilities f on f.client_id = c.id join covenants v on v.facility_id = f.id where v.active and f.status = 'active' order by label",
+    "file": "label",
+    "sections": [
+      { "title": "Covenants", "sql": "select v.code, f.code as facility, v.kind, v.metric || ' ' || v.comparator || coalesce(' ' || v.threshold::text, '') as test, 'every ' || v.every_months || ' months' as frequency, v.next_test_on from covenants v join facilities f on f.id = v.facility_id where f.client_id = $1 and v.active order by v.code" },
+      { "title": "Test history", "sql": "select v.code, t.tested_on, t.period_end, t.value, t.result, t.note, t.tested_by from covenant_tests t join covenants v on v.id = t.covenant_id join facilities f on f.id = v.facility_id where f.client_id = $1 order by t.tested_on desc" }
     ]
   }
 ]

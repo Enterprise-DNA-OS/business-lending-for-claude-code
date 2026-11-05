@@ -1,24 +1,25 @@
 # Why there is no front end
 
-Salesforce Financial Services Cloud is a database with a subscription. The tables underneath it are ordinary: a few entities, a few relationships, a handful of workflows you repeat every week. What you pay for is the layer on top that lets people who do not write SQL get at those tables. Screens, filters, dashboards, forms.
+Salesforce Financial Services Cloud is a set of records with a subscription on top: client groups, financial accounts, relationship managers, reviews, opportunities, call notes. What the per-user fee buys is the layer that lets a banker who does not write queries see those records: list views, page layouts, dashboards and reports somebody had to configure.
 
-That layer used to be the whole product, because talking to a database was hard. It is not hard any more. Open this folder in Claude Code, describe what you want, and it writes the query, runs it, and explains the answer. Ask a question the dashboard never had a chart for and you still get an answer.
+That layer existed because talking to a database was hard. It is not any more. A banker opens this folder in Claude Code and asks "what is due on my book this month?" or "which groups are over five million?" and gets the answer from the records, including questions nobody built a report for.
 
 ## What you gain
 
-- **Better answers.** A dashboard shows what the vendor decided to chart. Here you ask your own question, in your own words, and get it answered against your own data.
-- **No seats.** Everyone who needs to look can look. The bill does not grow with headcount.
-- **Your data in your Postgres.** Plain tables. Back them up, query them from anything, leave any time. There is no export step because there is nothing to leave.
-- **A process that matches you.** When your way of working changes, you add a command. You do not wait for a feature request to clear.
+- **Answers to your own questions.** The covenant tests due, the notice dates under the Banking Code, the connected exposure of a group: one command each, or one sentence.
+- **No per-user bill.** Credit, the relationship managers and the managing director can all ask. Nobody needs a licence to look.
+- **Your records in your database.** Plain records in a database you own. Back them up, query them from anything, leave any time.
+- **Your policy, not a vendor's.** Change a review cycle, a notice period or a risk grade scale in plain words with `/customise`.
 
 ## What you give up
 
-- **A visual board.** Stages are a table you ask about, not cards you drag.
-- **A phone app.** It runs where Claude Code runs.
-- **A vendor help desk.** This is open source. Enterprise DNA supports the installed version for businesses that want someone to call.
+- **A mobile app for site visits.** Bankers log visits after the fact, or Enterprise DNA builds a simple form into your version.
+- **A client portal.** Clients email their accounts today; a secure upload page is part of a customised build.
+- **Live feeds from your loan system.** This holds limits and balances as you record or import them. Enterprise DNA connects your loan system so balances arrive nightly.
+- **A vendor help desk.** This is open source. Enterprise DNA supports the installed version for lenders that want someone to call.
 
 ## Who this fits
 
-Small teams who already use Claude Code, or who would rather learn to ask than learn another interface. If your team needs a screen to look at all day, keep Salesforce Financial Services Cloud. If you need the answers more than the screens, this is cheaper, faster and yours.
+Business lending teams of five to fifty: non-bank lenders, credit unions, equipment and rural finance houses. If your bankers want answers more than screens, this is cheaper, faster and yours. If you need the screens too, that is what Enterprise DNA builds.
 
 Installed and run for you: https://enterprisedna.co/omni/instead-of/salesforce-financial-services-cloud

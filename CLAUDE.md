@@ -22,11 +22,46 @@ Fill this in once. A worker with context knows. A worker without it guesses.
 
 | When the operator asks for... | Use this |
 |---|---|
-| <!-- TODO(author): one row per slash command --> | `/...` |
+| what needs doing, what is overdue, this week | `/attention` |
+| the Monday review | `/weekly-review` |
+| how big is each banker's book | `/book` |
+| tell me about a client | `/client` |
+| connected exposure, biggest groups | `/groups` |
+| what matures soon, notice dates | `/maturities` |
+| which reviews are due | `/reviews` |
+| covenant tests due, breaches | `/covenants` |
+| record a covenant result | `/test-covenant` |
+| whose accounts are late | `/financials` |
+| accounts arrived, ask for accounts | `/receive-financials` |
+| KYC refreshes due | `/kyc` |
+| the deals | `/pipeline` |
+| a new deal | `/add-deal` |
+| who has gone quiet | `/quiet` |
+| log a call or visit | `/log` |
+| a new client, facility or covenant | `/add-client` |
+| change a limit, maturity or decision | `/amend-facility` |
+| a review is approved | `/complete-review` |
+| a formal notice | `/notice` |
+| write the notice letter | `/draft-notice` |
+| write a review paper | `/draft-review-paper` |
+| chase accounts | `/draft-chase` |
+| prep for a call | `/draft-call-prep` |
+| who is near their limit | `/headroom` |
+| the ten questions | `/insights` |
+| bring Salesforce data across | `/import` |
+| export everything | `/export` |
+| are we compliant | `/compliance` |
+| change a field, rule or stage | `/customise` |
+| a new dashboard page | `/new-view` |
+| what can it do | `/help` |
 
-If an ask fits nothing here, run the CLI directly (`npm run <cli> -- --help`) and then propose a new command for it.
+If an ask fits nothing here, run the CLI directly (`npm run lending -- help`) and then propose a new command for it.
 
 ## Hard rules
+
+- Notices, letters and emails are drafts in `drafts/`. Recording a notice (`notice`, `issue-notice`) is a record of what a person sent, never the sending.
+- Never record a credit approval, a waiver or a risk grade the operator has not named in this session.
+- A banker's own words in call notes stay as they said them; summarise, do not embellish.
 
 - Never send email or messages from here. Draft to `drafts/`, a person sends.
 - Never delete records without an explicit yes in this session. Prefer marking closed or archived.

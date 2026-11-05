@@ -1,0 +1,5 @@
+Id,Name,FinServ__PrimaryOwner__c,FinServ__FinancialAccountType__c,FinServ__FinancialAccountNumber__c,FinServ__LoanAmount__c,FinServ__Balance__c,FinServ__OpenDate__c,FinServ__LoanEndDate__c,FinServ__Status__c,FinServ__InterestRate__c
+a0B5g00000AbC1dEAF,Orchard development loan,001Ab00000XyZ1aAAF,Commercial Mortgage,TUI-0001,1250000,1180000.50,2020-07-01,2027-06-30,Open,7.15
+a0B5g00000AbC2eEAF,Fleet line,001Ab00000XyZ2bAAF,Line of Credit,KAHU-0001,300000,85000,2022-03-01,2027-03-01,Open,8.9
+a0B5g00000AbC3fEAF,Old equipment lease,001Ab00000XyZ2bAAF,Equipment Lease,KAHU-0002,90000,0,2018-01-10,2023-01-10,Closed,
+a0B5g00000AbC4gEAF,Orphan account,001Ab00000ZZZZZAAA,Loan,ORPHAN-1,50000,50000,2023-01-01,2028-01-01,Open,
